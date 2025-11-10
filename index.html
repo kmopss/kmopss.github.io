@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="A identity-preserving video generation pipeline based on the given prompts.">
+  <meta name="keywords" content="Text-to-Video Generation, Diffusion Model, Identity-preservation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KMOPS: Keypoint-Driven Method for Multi-Object Pose and Metric Size Estimation from Stereo Images</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-3 publication-title">KMOPS: Keypoint-Driven Method for Multi-Object Pose and Metric Size Estimation from Stereo Images</h1>
+          <div class="is-size-5 publication-authors">
+            <div class="author-row">
+              <span class="author-block" style="font-size: 28px;">
+                WACV 2026
+              </span>
+            </div>
+            <div class="author-row">
+              <span class="author-block">
+                <a href="">Ying-Kun Wu</a>,&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="">Yi Shen</a>,&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="">Tzuhsuan Huang</a>,&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="">I-Sheng Fang</a>,&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?hl=en&user=3x9KITUAAAAJ&view_op=list_works&sortby=pubdate">Jun-Cheng Chen</a>
+              </span>
+            </div>
+          </div>
+
+          <!-- <div class="is-size-5 publication-authors">
+            <span class="author-block">Peking University,</span>
+          </div> -->
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/yingkunwu/kmops"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .image-container img {
+    width: 140px; /* Fixed width for all images */
+    height: 140px; /* Fixed height for all images */
+    object-fit: cover; /* Ensures the image covers the box, may clip some parts */
+  }
+  .text-cell {
+    width: 140px; /* Allows the text cell to adjust based on content */
+    text-align: center;
+  }
+  .square-image {
+    width: 200px; /* Set both width and height to the same value */
+    height: 230px;
+    object-fit: cover; /* This will make sure the images cover the square area without distorting their aspect ratios */
+  }
+  table {
+    border-collapse: collapse; /* Removes the space between borders */
+  }
+  table, th, td {
+    border: 1.5px solid rgb(230, 230, 230); 
+  }
+  th, td {
+    text-align: center; 
+  }
+</style>
+
+<section >
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-five-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            The six-degree-of-freedom (6-DoF) pose and metric size estimation of multiple objects from RGB images alone remains a challenging task, particularly due to significant variations in object shape, appearance, and frequent occlusions in complex scenes. To address these challenges, we introduce <b>KMOPS</b>, a <b>K</b>eypoint-driven method tailored specifically for <b>M</b>ulti-<b>O</b>bject <b>P</b>ose and metric <b>S</b>ize estimation from a single calibrated stereo image pair. Leveraging the stereo input, our approach first extracts the 2D keypoints of the enclosing bounding boxes of the objects across both views, and subsequently triangulates them to acquire metric 3D positions.
+            Then, we obtain each object's rotation, translation, and dimensions by aligning the triangulated 3D keypoints to the canonical ones using a closed-form solution.
+            Our formulation eliminates the need for predefined 3D search spaces or volumetric anchors, which are often required by other methods to constrain the vast 3D solution space. With extensive experiments on the challenging dataset Transparent Object Dataset (TOD) and StereOBJ-1M, we show that our method outperforms all competing methods with a simple and effective architecture.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" >
+  <div class="container is-max-desktop">
+    <!-- Method. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-five-fifths">
+        <h2 class="title is-3">Overview of KMOPS</h2>
+        <img src="figures/model_overview.png" alt="framework">
+        <div class="content has-text-justified">
+          <p>
+            Overview of our model. We first extract features from both stereo views using a shared RT-DETR encoder and fuse them with an MLP fusion block. From the fused features we build N &times; (K+1) queries from N object tokens and N &times; K keypoint tokens. These queries are refined by 3 Transformer decoders iteratively and are then passed to prediction heads that output object category scores, K averaged 2D keypoint positions in image coordinates, and per-keypoint disparities and visibility scores for each object. Using stereo geometry, we lift the predictions to metric 3D keypoints and fit them to canonical keypoints to recover each object's pose and size.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Method. -->
+</section>
+
+<div class="columns is-centered has-text-centered" style="margin-top: 0px;">
+  <div class="column is-five-fifths">
+    <h2 class="title is-3">Comparison with SOTA</h2>
+        <p>
+            We compare with CubeRCNN, DetAny3D, CenterPose, and PETR on the validation sets of the StereOBJ-1M dataset.
+        </p>
+  </div>
+</div>
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/biolab_scene_1_07162020_14_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: biolab_scene_1_07162020_14</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/biolab_scene_1_07182020_5_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: biolab_scene_1_07182020_5</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/biolab_scene_3_08022020_4_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: biolab_scene_3_08022020_4</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/biolab_scene_4_08032020_1_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: biolab_scene_4_08032020_1</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/biolab_scene_5_08042020_6_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: biolab_scene_5_08042020_6</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/biolab_scene_6_08082020_5_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: biolab_scene_6_08082020_5</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/biolab_scene_8_08172020_4_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: biolab_scene_8_08172020_4</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/biolab_scene_9_08202020_5_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: biolab_scene_9_08202020_5</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/mechanics_scene_1_07282020_2_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: mechanics_scene_1_07282020_2</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/mechanics_scene_2_08012020_14_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: mechanics_scene_2_08012020_14</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/mechanics_scene_4_08032020_7_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: mechanics_scene_4_08032020_7</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/mechanics_scene_6_08092020_2_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: mechanics_scene_6_08092020_2</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="carousel-container" class="carousel-container">
+        <div class="carousel-item">
+            <div class="video-item">
+                <video autoplay controls muted loop playsinline style="max-width:80%; object-fit:cover;">
+                    <source src="videos/mechanics_scene_8_08172020_4_grid_compressed.mp4" type="video/mp4">
+                </video>
+                <p class="bottom-text">Scene: mechanics_scene_8_08172020_4</p>
+            </div>
+        </div>
+      </div>
+
+      <div id="pagination-dots" class="pagination-dots"></div>
+      <button class="layout-nav prev" onclick="prevSlide()">&#10094;</button>
+      <button class="layout-nav next" onclick="nextSlide()">&#10095;</button>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const items = document.querySelectorAll('.carousel-item');
+    const paginationDotsContainer = document.getElementById('pagination-dots');
+
+
+    items.forEach((_, index) => {
+        const dot = document.createElement('span');
+        dot.classList.add('dot');
+        if (index === 0) {
+            dot.classList.add('active'); 
+        }
+        dot.addEventListener('click', () => {
+            currentSlide = index;
+            showSlide(currentSlide);
+        });
+        paginationDotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('#pagination-dots .dot');
+
+    let currentSlide = 0;
+
+    function showSlide(index) {
+
+        if (index >= items.length) {
+            currentSlide = 0; 
+        } else if (index < 0) {
+            currentSlide = items.length - 1;  
+        } else {
+            currentSlide = index;
+        }
+
+
+        items.forEach((item, i) => {
+            item.classList.remove('active');
+            if (i === currentSlide) {
+                item.classList.add('active');
+            }
+        });
+
+
+        dots.forEach((dot, i) => {
+            dot.classList.remove('active');
+            if (i === currentSlide) {
+                dot.classList.add('active');
+            }
+        });
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+
+    document.querySelector('.layout-nav.prev').addEventListener('click', prevSlide);
+    document.querySelector('.layout-nav.next').addEventListener('click', nextSlide);
+
+
+    showSlide(currentSlide);
+
+
+    const newItems = document.querySelectorAll('.new-layout-item');
+    const newPaginationDotsContainer = document.getElementById('new-pagination-dots');
+
+
+    newItems.forEach((_, index) => {
+        const newDot = document.createElement('span');
+        newDot.classList.add('new-dot');
+        if (index === 0) {
+            newDot.classList.add('active'); 
+        }
+        newDot.addEventListener('click', () => {
+            currentNewSlide = index;
+            showNewSlide(currentNewSlide);
+        });
+        newPaginationDotsContainer.appendChild(newDot);
+    });
+
+    const newDots = document.querySelectorAll('#new-pagination-dots .new-dot');
+
+    let currentNewSlide = 0;
+
+    function showNewSlide(index) {
+
+        if (index >= newItems.length) {
+            currentNewSlide = 0;  
+        } else if (index < 0) {
+            currentNewSlide = newItems.length - 1; 
+        } else {
+            currentNewSlide = index;
+        }
+
+
+        newItems.forEach((item, i) => {
+            item.classList.remove('active');
+            if (i === currentNewSlide) {
+                item.classList.add('active');
+            }
+        });
+
+
+        newDots.forEach((newDot, i) => {
+            newDot.classList.remove('active');
+            if (i === currentNewSlide) {
+                newDot.classList.add('active');
+            }
+        });
+    }
+
+    function nextNewSlide() {
+        showNewSlide(currentNewSlide + 1);
+    }
+
+    function prevNewSlide() {
+        showNewSlide(currentNewSlide - 1);
+    }
+
+
+    document.querySelector('.new-layout-nav.prev').addEventListener('click', prevNewSlide);
+    document.querySelector('.new-layout-nav.next').addEventListener('click', nextNewSlide);
+
+
+    showNewSlide(currentNewSlide);
+});
+
+</script>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            In order to be compatible with HTML, the videos are transcoded and compressed, so the video quality will be affected.
+          </p>
+          <p>
+            This website is constructed using the templet provided by <a
+                href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> and <a
+                href="https://pku-yuangroup.github.io/ConsisID/">ConsisID</a>. Thanks for their effort.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
